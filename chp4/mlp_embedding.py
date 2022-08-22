@@ -15,6 +15,7 @@ class MLP(nn.Module):
         self.linear2 = nn.Linear(hidden_dim, num_class)
 
     def forward(self, inputs):
+        # B*S = 2 * 4
         embeddings = self.embedding(inputs)
         # 将序列中多个embedding进行聚合（此处是求平均值）
         embedding = embeddings.mean(dim=1)

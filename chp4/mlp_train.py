@@ -15,6 +15,9 @@ class MLP(nn.Module):
         outputs = self.linear2(activation)
         # 获得每个输入属于某一类别的概率（Softmax），然后再取对数
         # 取对数的目的是避免计算Softmax时可能产生的数值溢出问题
+        # log_softmax + NLLLoss() 就是交叉熵的结果
+        # Pytorch详解NLLLoss和CrossEntropyLoss : https://blog.51cto.com/u_15274944/2921745
+        # 损失函数｜交叉熵损失函数 ：https://zhuanlan.zhihu.com/p/35709485
         log_probs = F.log_softmax(outputs, dim=1)
         return log_probs
 
