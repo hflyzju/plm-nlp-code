@@ -35,7 +35,7 @@ def collate_fn(examples):
 
 def init_weights(model):
     for param in model.parameters():
-        torch.nn.init.uniform_(param, a=-WEIGHT_INIT_RANGE, b=WEIGHT_INIT_RANGE)
+        torch.nn.init.uniform_(param, a=-WEIGHT_INIT_RANGE, b=WEIGHT_INIT_RANGE) # 均匀分布
 
 class LSTM(nn.Module):
     def __init__(self, vocab_size, embedding_dim, hidden_dim, num_class):

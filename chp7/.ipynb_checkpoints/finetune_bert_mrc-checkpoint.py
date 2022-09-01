@@ -6,9 +6,8 @@ from transformers import BertTokenizerFast, BertForQuestionAnswering, TrainingAr
 
 # 加载训练数据、分词器、预训练模型以及评价方法
 dataset = load_dataset('squad')
-bert_dir = '/Users/huxiang/Documents/pretrain_models/bert-tiny/'
-tokenizer = BertTokenizerFast.from_pretrained(bert_dir)
-model = BertForQuestionAnswering.from_pretrained(bert_dir, return_dict=True)
+tokenizer = BertTokenizerFast.from_pretrained('bert-base-cased')
+model = BertForQuestionAnswering.from_pretrained('bert-base-cased', return_dict=True)
 metric = load_metric('squad')
 
 # 准备训练数据并转换为feature
@@ -83,7 +82,7 @@ args = TrainingArguments(
     learning_rate=2e-5,                 # 定义初始学习率
     per_device_train_batch_size=16,     # 定义训练批次大小
     per_device_eval_batch_size=16,      # 定义测试批次大小
-    num_train_epochs=20,                 # 定义训练轮数
+    num_train_epochs=2,                 # 定义训练轮数
 )
 
 # 定义Trainer，指定模型和训练参数，输入训练集、验证集、分词器以及评价函数

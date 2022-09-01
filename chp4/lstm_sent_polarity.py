@@ -38,7 +38,7 @@ class LSTM(nn.Module):
     def forward(self, inputs, lengths):
         embeddings = self.embeddings(inputs)
         x_pack = pack_padded_sequence(embeddings, lengths, batch_first=True, enforce_sorted=False)
-        hidden, (hn, cn) = self.lstm(x_pack)
+        hidden, (hn, cn) = self.lstm(x_pack) # hn, cn为最后一个位置的输出
         outputs = self.output(hn[-1])
         log_probs = F.log_softmax(outputs, dim=-1)
         return log_probs

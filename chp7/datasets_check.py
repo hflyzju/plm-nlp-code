@@ -1,28 +1,37 @@
-# Defined in Section 7.4.4.2
+import json
 
-import numpy as np
 from datasets import load_dataset, load_metric
 from transformers import BertTokenizerFast, BertForQuestionAnswering, TrainingArguments, Trainer, default_data_collator
 
-# 加载训练数据、分词器、预训练模型以及评价方法
 dataset = load_dataset('squad')
-bert_dir = '/Users/huxiang/Documents/pretrain_models/bert-tiny/'
-tokenizer = BertTokenizerFast.from_pretrained(bert_dir)
-model = BertForQuestionAnswering.from_pretrained(bert_dir, return_dict=True)
-metric = load_metric('squad')
 
-# 准备训练数据并转换为feature
+tokenizer = BertTokenizerFast.from_pretrained('/Users/huxiang/Documents/pretrain_models/bert-tiny/')
+
+
+
 def prepare_train_features(examples):
+    """准备训练数据并转换为feature
+    Args:
+        examples: batch为n的数据，dict_keys(['id', 'title', 'context', 'question', 'answers']),
+            example:{id:[id1, id2, ...], title:[title1, title2, ...],
+                     context:[context1, context2, ...],
+                     question:[question1, question2, ...],
+                     answers:[answers1, answers2, ...]}
+
+    """
     tokenized_examples = tokenizer(
         examples["question"],           # 问题文本
         examples["context"],            # 篇章文本
         truncation="only_second",       # 截断只发生在第二部分，即篇章
-        max_length=384,                 # 设定最大长度为384
-        stride=128,                     # 设定篇章切片步长为128
+        max_length=50,                 # 设定最大长度为384
+        stride=30,                     # 设定篇章切片步长为128
         return_overflowing_tokens=True, # 返回超出最大长度的标记，将篇章切成多片
         return_offsets_mapping=True,    # 返回偏置信息，用于对齐答案位置
         padding="max_length",           # 按最大长度进行补齐
     )
+
+    print("len(examples):", len(examples))
+    print("len(tokenized_examples):", len(tokenized_examples))
 
     # 如果篇章很长，则可能会被切成多个小篇章，需要通过以下函数建立feature到example的映射关系
     sample_mapping = tokenized_examples.pop("overflow_to_sample_mapping")
@@ -73,28 +82,4 @@ def prepare_train_features(examples):
 
     return tokenized_examples
 
-# 通过函数prepare_train_features，建立分词后的训练集
-tokenized_datasets = dataset.map(prepare_train_features, batched=True, remove_columns=dataset["train"].column_names)
-
-# 定义训练参数TrainingArguments，默认使用AdamW优化器
-args = TrainingArguments(
-    "ft-squad",                         # 输出路径，存放检查点和其他输出文件
-    evaluation_strategy="epoch",        # 定义每轮结束后进行评价
-    learning_rate=2e-5,                 # 定义初始学习率
-    per_device_train_batch_size=16,     # 定义训练批次大小
-    per_device_eval_batch_size=16,      # 定义测试批次大小
-    num_train_epochs=20,                 # 定义训练轮数
-)
-
-# 定义Trainer，指定模型和训练参数，输入训练集、验证集、分词器以及评价函数
-trainer = Trainer(
-    model,
-    args,
-    train_dataset=tokenized_datasets["train"],
-    eval_dataset=tokenized_datasets["validation"],
-    data_collator=default_data_collator,
-    tokenizer=tokenizer,
-)
-
-# 开始训练！（主流GPU上耗时约几小时）
-trainer.train()
+result = prepare_train_features(dataset['train'][0:2])
