@@ -97,4 +97,7 @@ trainer = Trainer(
 )
 
 # 开始训练！（主流GPU上耗时约几小时）
+
+print('start traning...')
 trainer.train()
+print('done!')
