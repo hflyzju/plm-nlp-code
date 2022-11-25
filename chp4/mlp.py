@@ -21,7 +21,7 @@ class MLP(nn.Module):
         probs = F.softmax(outputs, dim=1) # 获得每个输入属于某一类别的概率
         return probs
 
-mlp = MLP(input_dim=4, hidden_dim=5, num_class=2)
-inputs = torch.rand(3, 4) # 输入形状为(3, 4)的张量，其中3表示有3个输入，4表示每个输入的维度
+mlp = MLP(input_dim=768, hidden_dim=5, num_class=2)
+inputs = torch.rand(3, 768) # 输入形状为(3, 4)的张量，其中3表示有3个输入，4表示每个输入的维度
 probs = mlp(inputs) # 自动调用forward函数
 print(probs) # 输出3个输入对应输出的概率
